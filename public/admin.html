@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="admin-container">
+            <header class="admin-header">
+                <h1>Admin Dashboard</h1>
+                <button id="logout-btn" class="btn btn-danger">Logout</button>
+            </header>
+            
+            <div class="admin-content">
+                <div class="user-management">
+                    <h2>User Management</h2>
+                    
+                    <div class="add-user-section">
+                        <h3>Add New User</h3>
+                        <form id="add-user-form">
+                            <div class="form-group">
+                                <label for="new-username">Username</label>
+                                <input type="text" id="new-username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">Password</label>
+                                <input type="password" id="new-password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn">Add User</button>
+                        </form>
+                        <div id="add-user-message" class="message"></div>
+                    </div>
+                    
+                    <div class="user-list-section">
+                        <h3>User List</h3>
+                        <div class="user-list-container">
+                            <table id="user-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th>Created At</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-list">
+                                    <!-- User list will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/admin.js"></script>
+</body>
+</html>
