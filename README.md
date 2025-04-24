@@ -219,6 +219,10 @@ jjguibotauthserver/
    # Rate limiting
    RATE_LIMIT_WINDOW_MS=900000
    RATE_LIMIT_MAX_REQUESTS=100
+
+   # CORS
+   # Use '*' to allow all origins, or a comma-separated list of allowed origins
+   CORS_ALLOWED_ORIGINS=*
    ```
 
    **Important:** Change the default admin credentials and JWT secret in production!
@@ -282,6 +286,10 @@ jjguibotauthserver/
    # Rate limiting
    RATE_LIMIT_WINDOW_MS=900000
    RATE_LIMIT_MAX_REQUESTS=50
+
+   # CORS
+   # For production, specify the exact origins that should be allowed
+   CORS_ALLOWED_ORIGINS=https://yourappdomain.com,https://admin.yourappdomain.com
    ```
 
 7. Start the service:
@@ -330,6 +338,18 @@ If you prefer to set up your VPS manually, follow these steps:
 - **Database backups**: Regularly back up your SQLite database
 - **Firewall configuration**: Restrict access to your server using a firewall
 - **Monitoring**: Set up monitoring for your application to detect unusual activity
+
+## External App Integration
+
+This authentication server can be used to provide authentication services for your external applications. For detailed instructions on how to integrate your apps with this server, see the [External App Integration Guide](EXTERNAL_APP_INTEGRATION.md).
+
+Key features for external app integration:
+
+- **CORS Configuration**: Configure allowed origins for cross-origin requests
+- **JWT Authentication**: Secure token-based authentication for your applications
+- **Role-Based Access**: Different access levels for users and administrators
+- **API Endpoints**: Well-documented API endpoints for authentication and user management
+- **Example Code**: Sample code for integrating with JavaScript applications
 
 ## Troubleshooting
 

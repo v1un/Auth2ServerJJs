@@ -1,43 +1,64 @@
-﻿const express = require('express');
+﻿// C:/Users/vini/WebstormProjects/jjguibotauthserver/src/routes/authRoutes.js
+const express = require('express');
 const { validate, loginValidationRules } = require('../middleware/validator');
 const { validationErrorHandler } = require('../middleware/errorHandler');
-const { authLimiter } = require('../middleware/rateLimiter');
+const { loginLimiter, apiLimiter } = require('../middleware/rateLimiter');
 
 /**
  * Create authentication routes
- * @param {Object} authController - Authentication controller instance
+ * @param {Object} authController - Auth controller instance
+ * @param {Object} authMiddleware - Auth middleware functions
  * @returns {Object} Express router
  */
-const createAuthRoutes = (authController) => {
+module.exports = (authController, authMiddleware) => {
   const router = express.Router();
-  
-  /**
-   * @route POST /api/auth/login
-   * @desc Authenticate user and get token
-   * @access Public
-   */
+  // Destructure if needed: const { authenticateToken, requireUserRole } = authMiddleware;
+
+  // --- Standard User Login ---
   router.post(
-    '/login',
-    authLimiter, // Apply rate limiting to prevent brute force attacks
-    validate(loginValidationRules),
-    validationErrorHandler,
-    (req, res, next) => authController.login(req, res, next)
+      '/login',
+      loginLimiter,
+      // Validation now happens within the controller or dedicated middleware if needed for rememberMe
+      // validate(loginValidationRules), // Keep if validating username/password format
+      validationErrorHandler,
+      (req, res, next) => authController.login(req, res, next)
   );
-  
-  /**
-   * @route POST /api/auth/admin/login
-   * @desc Authenticate admin and get token
-   * @access Public
-   */
+
+  // --- Admin Login ---
   router.post(
-    '/admin/login',
-    authLimiter, // Apply rate limiting to prevent brute force attacks
-    validate(loginValidationRules),
-    validationErrorHandler,
-    (req, res, next) => authController.adminLogin(req, res, next)
+      '/admin/login',
+      loginLimiter,
+      // validate(loginValidationRules), // Keep if validating username/password format
+      validationErrorHandler,
+      (req, res, next) => authController.adminLogin(req, res, next)
   );
-  
+
+  // --- NEW: Logout Route ---
+  // Use POST for logout to prevent CSRF issues with GET requests
+  router.post(
+      '/logout',
+      apiLimiter, // Apply a general limiter
+      // No validation needed, relies on session
+      (req, res, next) => authController.logout(req, res, next)
+  );
+  // --- End Logout Route ---
+
+
+  // --- Device Flow Routes ---
+  router.post(
+      '/oauth/device/code',
+      apiLimiter,
+      (req, res, next) => authController.initiateDeviceAuth(req, res, next)
+  );
+
+  router.post(
+      '/oauth/token',
+      apiLimiter,
+      // TODO: Add validation rules for grant_type, device_code
+      // validationErrorHandler,
+      (req, res, next) => authController.pollDeviceToken(req, res, next)
+  );
+  // --- End Device Flow Routes ---
+
   return router;
 };
-
-module.exports = createAuthRoutes;

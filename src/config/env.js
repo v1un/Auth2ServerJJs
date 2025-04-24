@@ -1,79 +1,65 @@
-﻿// Environment configuration
+﻿// C:/Users/vini/WebstormProjects/jjguibotauthserver/src/config/env.js
 require('dotenv').config();
+const logger = require('../utils/logger'); // Assuming logger is available early
 
-// Default configuration values
-const defaults = {
-  // Server settings
-  PORT: 3000,
-  NODE_ENV: 'development',
-  
-  // Security
-  JWT_SECRET: 'default_jwt_secret_change_this',
-  JWT_EXPIRATION: '1h',
-  BCRYPT_SALT_ROUNDS: 10,
-  
-  // Admin credentials
-  ADMIN_USERNAME: 'admin',
-  ADMIN_PASSWORD: 'admin123',
-  
-  // Database
-  DB_PATH: 'auth.db',
-  
-  // Rate limiting
-  RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000, // 15 minutes
-  RATE_LIMIT_MAX_REQUESTS: 100 // 100 requests per window
-};
-
-// Environment configuration with defaults
 const config = {
-  // Server settings
-  PORT: process.env.PORT || defaults.PORT,
-  NODE_ENV: process.env.NODE_ENV || defaults.NODE_ENV,
-  
-  // Security
-  JWT_SECRET: process.env.JWT_SECRET || defaults.JWT_SECRET,
-  JWT_EXPIRATION: process.env.JWT_EXPIRATION || defaults.JWT_EXPIRATION,
-  BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS || defaults.BCRYPT_SALT_ROUNDS),
-  
-  // Admin credentials
-  ADMIN_USERNAME: process.env.ADMIN_USERNAME || defaults.ADMIN_USERNAME,
-  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || defaults.ADMIN_PASSWORD,
-  
-  // Database
-  DB_PATH: process.env.DB_PATH || defaults.DB_PATH,
-  
-  // Rate limiting
-  RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS || defaults.RATE_LIMIT_WINDOW_MS),
-  RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || defaults.RATE_LIMIT_MAX_REQUESTS),
-  
-  // Computed properties
-  isProd: (process.env.NODE_ENV || defaults.NODE_ENV) === 'production',
-  isDev: (process.env.NODE_ENV || defaults.NODE_ENV) === 'development'
+  PORT: process.env.PORT || 3000,
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_EXPIRATION: process.env.JWT_EXPIRATION || '1h',
+  JWT_EXPIRATION_SECONDS: parseInt(process.env.JWT_EXPIRATION_SECONDS, 10) || 3600, // Default 1 hour
+  BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10,
+  ADMIN_USERNAME: process.env.ADMIN_USERNAME,
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+  DB_PATH: process.env.DB_PATH || 'auth.db',
+  LOG_LEVEL: process.env.LOG_LEVEL || 'INFO',
+  RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000, // 15 minutes
+  RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 100,
+  CORS_ALLOWED_ORIGINS: process.env.CORS_ALLOWED_ORIGINS || '*',
+  SESSION_SECRET: process.env.SESSION_SECRET, // Added
 };
 
-// Validate critical configuration
+// Derived config
+config.isProd = config.NODE_ENV === 'production';
+config.isDev = config.NODE_ENV === 'development';
+
+// Validation function
 const validateConfig = () => {
-  // In production, ensure JWT_SECRET is changed from default
-  if (config.isProd && config.JWT_SECRET === defaults.JWT_SECRET) {
-    console.error('ERROR: JWT_SECRET must be changed in production environment');
-    process.exit(1);
+  const requiredEnvVars = [
+    'JWT_SECRET',
+    'ADMIN_USERNAME',
+    'ADMIN_PASSWORD',
+    'SESSION_SECRET', // Added
+  ];
+
+  const missingVars = requiredEnvVars.filter(key => !config[key]);
+
+  if (missingVars.length > 0) {
+    const message = `Missing required environment variables: ${missingVars.join(', ')}`;
+    logger.error(message);
+    throw new Error(message);
   }
-  
-  // In production, ensure admin credentials are changed from defaults
-  if (config.isProd && 
-      config.ADMIN_USERNAME === defaults.ADMIN_USERNAME && 
-      config.ADMIN_PASSWORD === defaults.ADMIN_PASSWORD) {
-    console.error('ERROR: Default admin credentials must be changed in production environment');
-    process.exit(1);
+
+  if (config.isProd && config.JWT_SECRET === 'your_super_secure_jwt_secret_key_change_this_in_production') {
+    const message = 'Default JWT_SECRET detected in production environment. Please set a strong, unique secret.';
+    logger.error(message);
+    throw new Error(message);
   }
-  
-  // Log warning if using default JWT_SECRET in development
-  if (config.isDev && config.JWT_SECRET === defaults.JWT_SECRET) {
-    console.warn('WARNING: Using default JWT_SECRET in development environment');
+
+  if (config.isProd && config.SESSION_SECRET === 'your_very_secure_random_session_secret_change_this') {
+    const message = 'Default SESSION_SECRET detected in production environment. Please set a strong, unique secret.';
+    logger.error(message);
+    throw new Error(message);
   }
+
+  if (isNaN(config.JWT_EXPIRATION_SECONDS) || config.JWT_EXPIRATION_SECONDS <= 0) {
+    const message = 'Invalid JWT_EXPIRATION_SECONDS. Must be a positive number.';
+    logger.error(message);
+    throw new Error(message);
+  }
+
+  // Add more validation as needed (e.g., BCRYPT_SALT_ROUNDS range)
+  logger.info('Environment configuration validated successfully.');
 };
 
-module.exports = {
-  config,
-  validateConfig
-};
+module.exports = { config, validateConfig };

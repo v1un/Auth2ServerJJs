@@ -7,48 +7,69 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="auth-container">
-            <h1>Authentication System</h1>
-            
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="user">User Login</button>
-                <button class="tab-btn" data-tab="admin">Admin Login</button>
-            </div>
-            
-            <div class="tab-content active" id="user-tab">
-                <h2>User Login</h2>
-                <form id="user-login-form">
-                    <div class="form-group">
-                        <label for="user-username">Username</label>
-                        <input type="text" id="user-username" name="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="user-password">Password</label>
-                        <input type="password" id="user-password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn">Login</button>
-                </form>
-                <div id="user-message" class="message"></div>
-            </div>
-            
-            <div class="tab-content" id="admin-tab">
-                <h2>Admin Login</h2>
-                <form id="admin-login-form">
-                    <div class="form-group">
-                        <label for="admin-username">Username</label>
-                        <input type="text" id="admin-username" name="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="admin-password">Password</label>
-                        <input type="password" id="admin-password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn">Login</button>
-                </form>
-                <div id="admin-message" class="message"></div>
-            </div>
+<div class="container">
+    <div class="auth-container">
+        <h1>Authentication System</h1>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="user">User Login</button>
+            <button class="tab-btn" data-tab="admin">Admin Login</button>
+        </div>
+
+        <div class="tab-content active" id="user-tab">
+            <h2>User Login</h2>
+            <form id="user-login-form">
+                <!-- Add hidden field for redirect URI -->
+                <input type="hidden" name="redirectUri" id="user-redirect-uri">
+                <div class="form-group">
+                    <label for="user-username">Username</label>
+                    <input type="text" id="user-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-password">Password</label>
+                    <input type="password" id="user-password" name="password" required>
+                </div>
+                <!-- Add Remember Me Checkbox -->
+                <div class="form-group form-check">
+                    <input type="checkbox" id="user-remember-me" name="rememberMe">
+                    <label for="user-remember-me">Remember Me</label>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <div id="user-message" class="message"></div>
+        </div>
+
+        <div class="tab-content" id="admin-tab">
+            <h2>Admin Login</h2>
+            <form id="admin-login-form">
+                <!-- Add hidden field for redirect URI -->
+                <input type="hidden" name="redirectUri" id="admin-redirect-uri">
+                <div class="form-group">
+                    <label for="admin-username">Username</label>
+                    <input type="text" id="admin-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" name="password" required>
+                </div>
+                <!-- Add Remember Me Checkbox -->
+                <div class="form-group form-check">
+                    <input type="checkbox" id="admin-remember-me" name="rememberMe">
+                    <label for="admin-remember-me">Remember Me</label>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <div id="admin-message" class="message"></div>
         </div>
     </div>
-    <script src="js/login.js"></script>
+</div>
+<!-- Add a check for existing session before loading login.js -->
+<script>
+    // Simple check: If we are on the login page but maybe already logged in (e.g., admin)
+    // This is a basic check; a more robust way involves an API call.
+    // We'll enhance this in login.js itself.
+    // console.log("Checking initial state...");
+</script>
+<script src="js/login.js"></script>
 </body>
 </html>

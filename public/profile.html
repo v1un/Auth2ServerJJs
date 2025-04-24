@@ -1,0 +1,106 @@
+﻿<!-- C:/Users/vini/WebstormProjects/jjguibotauthserver/public/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* ... (keep existing styles from previous step) ... */
+    .profile-container { max-width: 600px; margin: 40px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: relative; }
+    .message-area { margin-bottom: 15px; min-height: 20px; }
+    .message { padding: 10px; border-radius: 4px; text-align: center; font-size: 0.9em; }
+    .message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .loading { text-align: center; padding: 20px; color: #888; }
+    .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+    .profile-details dt { font-weight: bold; margin-top: 10px; color: #555; }
+    .profile-details dd { margin-left: 0; margin-bottom: 10px; color: #333; word-break: break-all; }
+    .profile-details dd i { color: #888; }
+    .admin-link { margin-left: 10px; font-size: 0.9em; }
+    .profile-edit-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+    .profile-edit-section h2 { margin-bottom: 15px; }
+    .profile-edit-section .form-group { margin-bottom: 15px; }
+    .profile-edit-section label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+    .profile-edit-section input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    .profile-edit-actions { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .profile-edit-actions .btn-secondary { background-color: #6c757d; border-color: #6c757d; color: white; }
+    .profile-edit-actions .btn-secondary:hover { background-color: #5a6268; border-color: #545b62; }
+    #new-password-display { margin-top: 15px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 4px; color: #856404; font-family: monospace; word-break: break-all; }
+    #new-password-display strong { display: block; margin-bottom: 5px; color: #721c24; }
+    #profile-prompt { background-color: #e2e3e5; border: 1px solid #d6d8db; padding: 15px; margin-bottom: 20px; border-radius: 4px; text-align: center; }
+    #profile-prompt p { margin: 0 0 10px 0; color: #383d41; }
+    #profile-prompt button { margin: 0 5px; }
+  </style>
+</head>
+<body>
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>My Profile</h1>
+    <div>
+      <a href="/admin.html" id="admin-dashboard-link" class="btn btn-secondary admin-link" style="display: none;">Admin Dashboard</a>
+      <button id="logout-btn" class="btn btn-danger">Logout</button>
+    </div>
+  </div>
+
+  <!-- Area for Loading / Error / Success Messages -->
+  <div class="message-area">
+    <p class="loading">Loading profile...</p>
+    <p class="message error error-message" style="display: none;"></p>
+    <p class="message success success-message" style="display: none;"></p> <!-- Added success message element -->
+  </div>
+
+  <!-- Initial Profile Setup Prompt -->
+  <div id="profile-prompt" style="display: none;">
+    <p>Welcome! Would you like to set a display name for your profile?</p>
+    <button id="prompt-yes-btn" class="btn btn-primary">Yes, set name</button>
+    <button id="prompt-no-btn" class="btn btn-secondary">Maybe later</button>
+  </div>
+
+  <!-- Main Profile Content (Details & Edit Form) -->
+  <div id="profile-content" style="display: none;"> <!-- Hide content until loaded -->
+    <!-- Profile details -->
+    <dl class="profile-details">
+      <dt>User ID</dt>
+      <dd id="user-id"></dd>
+
+      <dt>Username</dt>
+      <dd id="user-username"></dd>
+
+      <!-- Display Custom Name -->
+      <dt>Display Name</dt>
+      <dd id="user-custom-name"><i>Not set</i></dd>
+
+      <dt>Role</dt>
+      <dd id="user-role"></dd>
+
+      <dt>Account Created</dt>
+      <dd id="user-created-at"></dd>
+
+      <dt>Bound IP Address</dt>
+      <dd id="user-allowed-ip"></dd>
+    </dl>
+
+    <!-- Profile Editing Section -->
+    <div class="profile-edit-section">
+      <h2>Edit Profile</h2>
+      <form id="profile-edit-form">
+        <div class="form-group">
+          <label for="custom-name-input">Display Name</label>
+          <input type="text" id="custom-name-input" name="custom_name" maxlength="50" placeholder="Enter your display name (optional)">
+        </div>
+        <div class="profile-edit-actions">
+          <button type="submit" id="save-profile-btn" class="btn btn-primary">Save Profile</button>
+          <button type="button" id="reset-password-btn" class="btn btn-secondary">Reset Password</button>
+        </div>
+      </form>
+      <!-- Area to display the new password after reset -->
+      <div id="new-password-display" style="display: none;"></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/profile.js"></script>
+</body>
+</html>

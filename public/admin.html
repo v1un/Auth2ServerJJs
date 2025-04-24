@@ -5,58 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Basic styling for IP display and buttons */
+        .ip-cell { /* Style for the cell displaying the IP */
+            font-family: monospace; /* Make IPs stand out a bit */
+            word-break: break-all; /* Prevent long IPs breaking layout */
+        }
+        .actions-cell button { /* Add margin between buttons in the actions cell */
+            margin-right: 5px;
+        }
+        .actions-cell button:last-child { /* Remove margin from the last button */
+            margin-right: 0;
+        }
+        .ip-reset-status { /* Styling for the reset status message */
+            margin-left: 10px;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        .ip-reset-status.success { color: green; }
+        .ip-reset-status.error { color: red; }
+        .ip-reset-status.saving { color: orange; }
+
+        #user-table th, #user-table td { padding: 8px 12px; }
+        #user-table { table-layout: fixed; width: 100%; } /* Helps with column widths */
+        #user-table th:nth-child(1), /* ID */
+        #user-table th:nth-child(3) { /* Role */
+            width: 8%;
+        }
+        #user-table th:nth-child(4) { /* Created At */
+            width: 20%;
+        }
+        #user-table th:nth-child(5) { /* Allowed IP */
+            width: 20%;
+        }
+        #user-table th:nth-child(6) { /* Actions */
+            width: 15%;
+        }
+        /* Username column takes remaining width */
+
+        /* --- New Styles for Header --- */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px; /* Add some space below header */
+        }
+        .admin-header-actions {
+            display: flex;
+            align-items: center;
+        }
+        .admin-header-actions a, /* Style the profile link like a button */
+        .admin-header-actions button {
+            margin-left: 10px; /* Space between profile and logout */
+        }
+        .admin-header-actions a {
+            text-decoration: none; /* Remove underline from link */
+            padding: 8px 12px; /* Match button padding */
+            border: 1px solid #ccc; /* Match button border */
+            border-radius: 4px; /* Match button border-radius */
+            color: #333; /* Match button text color */
+            background-color: #f8f9fa; /* Light background */
+            font-size: 0.9em;
+        }
+        .admin-header-actions a:hover {
+            background-color: #e2e6ea; /* Darken on hover */
+        }
+        /* --- End New Styles --- */
+
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="admin-container">
-            <header class="admin-header">
-                <h1>Admin Dashboard</h1>
+<div class="container">
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1>Admin Dashboard</h1>
+            <!-- Group actions together -->
+            <div class="admin-header-actions">
+                <a href="/profile.html" id="profile-link" class="btn btn-secondary">My Profile</a> <!-- Profile Link -->
                 <button id="logout-btn" class="btn btn-danger">Logout</button>
-            </header>
-            
-            <div class="admin-content">
-                <div class="user-management">
-                    <h2>User Management</h2>
-                    
-                    <div class="add-user-section">
-                        <h3>Add New User</h3>
-                        <form id="add-user-form">
-                            <div class="form-group">
-                                <label for="new-username">Username</label>
-                                <input type="text" id="new-username" name="username" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="new-password">Password</label>
-                                <input type="password" id="new-password" name="password" required>
-                            </div>
-                            <button type="submit" class="btn">Add User</button>
-                        </form>
-                        <div id="add-user-message" class="message"></div>
-                    </div>
-                    
-                    <div class="user-list-section">
-                        <h3>User List</h3>
-                        <div class="user-list-container">
-                            <table id="user-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Username</th>
-                                        <th>Role</th>
-                                        <th>Created At</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="user-list">
-                                    <!-- User list will be populated here -->
-                                </tbody>
-                            </table>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div class="user-management">
+                <h2>User Management</h2>
+
+                <div class="add-user-section">
+                    <h3>Add New User</h3>
+                    <form id="add-user-form">
+                        <div class="form-group">
+                            <label for="new-username">Username</label>
+                            <input type="text" id="new-username" name="username" required>
                         </div>
+                        <div class="form-group">
+                            <label for="new-password">Password</label>
+                            <input type="password" id="new-password" name="password" required minlength="8">
+                        </div>
+                        <button type="submit" class="btn">Add User</button>
+                    </form>
+                    <div id="add-user-message" class="message"></div>
+                </div>
+
+                <div class="user-list-section">
+                    <h3>User List</h3>
+                    <div class="user-list-container">
+                        <table id="user-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Created At</th>
+                                <th>Allowed IP</th>
+                                <!-- Combine Actions into one column -->
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="user-list">
+                            <!-- User list will be populated here by admin.js -->
+                            <!-- Adjust colspan for loading row -->
+                            <tr><td colspan="6">Loading users...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="js/admin.js"></script>
+</div>
+<!-- Ensure admin.js is included -->
+<script src="js/admin.js"></script>
 </body>
 </html>

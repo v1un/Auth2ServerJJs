@@ -1,4 +1,5 @@
-﻿const rateLimit = require('express-rate-limit');
+﻿// C:/Users/vini/WebstormProjects/jjguibotauthserver/src/middleware/rateLimiter.js
+const rateLimit = require('express-rate-limit');
 const { config } = require('../config/env');
 const { ApiError } = require('./errorHandler');
 
@@ -16,36 +17,42 @@ const createRateLimiter = (options = {}) => {
     handler: (req, res, next, options) => {
       // Create a custom API error for rate limiting
       next(new ApiError(
-        429, 
-        'Too many requests, please try again later.', 
-        'RATE_LIMIT_EXCEEDED'
+          options.statusCode || 429, // Use statusCode from options if provided
+          options.message || 'Too many requests, please try again later.',
+          'RATE_LIMIT_EXCEEDED'
       ));
     }
   };
 
   // Merge default options with provided options
   const limiterOptions = { ...defaultOptions, ...options };
-  
+
   return rateLimit(limiterOptions);
 };
 
 // Create standard rate limiters for different endpoints
+
+// General API limiter (uses defaults from .env)
 const apiLimiter = createRateLimiter();
 
-const authLimiter = createRateLimiter({
+// Specific limiter for login attempts
+const loginLimiter = createRateLimiter({ // Renamed from authLimiter
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // 10 requests per 15 minutes
-  message: 'Too many login attempts, please try again later'
+  max: 10, // Allow 10 login attempts per 15 minutes per IP
+  message: 'Too many login attempts from this IP, please try again after 15 minutes',
+  // Optional: You could add skipSuccessfulRequests: true if you only want to limit failed attempts
 });
 
+// Specific limiter for admin actions (can be stricter or looser depending on needs)
 const adminLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 30 // 30 requests per hour for admin endpoints
+  max: 50, // Allow 50 admin actions per hour per IP (adjust as needed)
+  message: 'Too many admin requests from this IP, please try again after an hour'
 });
 
 module.exports = {
   createRateLimiter,
   apiLimiter,
-  authLimiter,
+  loginLimiter, // Export the renamed limiter
   adminLimiter
 };

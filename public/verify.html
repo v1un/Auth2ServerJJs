@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Device</title>
+  <link rel="stylesheet" href="css/styles.css"> <!-- Link your existing styles -->
+  <style>
+    .verification-container {
+      max-width: 450px;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .verification-container h1 {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box; /* Include padding in width */
+      text-align: center;
+      font-size: 1.2em;
+      letter-spacing: 2px; /* Space out code characters */
+    }
+    .button-group {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+    .button-group .btn {
+      padding: 10px 20px;
+    }
+    .message {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .message.info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+    /* Hide/show sections */
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+<div class="verification-container">
+  <h1>Verify Your Device</h1>
+
+  <div id="message-area" class="message info">Please enter the code displayed on your device.</div>
+
+  <!-- Login Section (Initially hidden if session might exist) -->
+  <div id="login-section" class="hidden">
+    <h2>Please Log In</h2>
+    <form id="login-form">
+      <!-- CSRF Token will be added here by JS -->
+      <input type="hidden" name="_csrf" id="csrf-token-login">
+      <div class="form-group">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" name="username" required>
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="password" required>
+      </div>
+      <button type="submit" class="btn">Log In</button>
+    </form>
+    <div id="login-message" class="message"></div>
+  </div>
+
+  <!-- Code Entry & Approval Section -->
+  <div id="verification-section">
+    <!-- Welcome message if logged in -->
+    <p id="welcome-message" class="hidden">Welcome, <span id="logged-in-username"></span>!</p>
+
+    <form id="verification-form">
+      <!-- CSRF Token will be added here by JS -->
+      <input type="hidden" name="_csrf" id="csrf-token-verify">
+      <div class="form-group">
+        <label for="user-code">Enter Code</label>
+        <input type="text" id="user-code" name="user_code" required maxlength="8" pattern="[A-Z0-9]{8}" placeholder="ABCDEFGH" style="text-transform:uppercase">
+      </div>
+
+      <div class="button-group">
+        <button type="submit" name="action" value="approve" class="btn btn-success">Approve Device</button>
+        <button type="submit" name="action" value="deny" class="btn btn-danger">Deny Request</button>
+      </div>
+    </form>
+    <div id="verification-message" class="message"></div>
+  </div>
+
+  <!-- Success/Denied Message Area -->
+  <div id="result-section" class="hidden">
+    <h2 id="result-title"></h2>
+    <p id="result-message"></p>
+    <p><small>You can now close this window.</small></p>
+  </div>
+
+</div>
+
+<script src="js/verify.js"></script>
+</body>
+</html>
